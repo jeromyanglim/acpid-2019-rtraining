@@ -2,19 +2,19 @@
 # Workshop Materials
 
 * Download workshop materials and unzip them to a folder on your computer:
-  https://github.com/jeromyanglim/introduction-to-r-one-day-workshop/archive/master.zip
+  https://github.com/jeromyanglim/acpid-2019-rtraining/archive/master.zip
+* If you are on Windows, make sure that you actually unzipped the file. Windows allows you to navigate within zip files without actually unzipping them. This causes problems. It's important that you actually unzip the file.
 
-# Install R and R Studio (Essential)
+# Install R and R Studio
 These instructions assume that you have already installed R and RStudio.
 If you have not already done this, go to the following sites.
 
 * R: http://cran.rstudio.com/
 * Rstudio Desktop: http://www.rstudio.com/products/RStudio/
 
-
-# Install Additional R Packages (Essential)
+# Install Additional R Packages
 Open R Studio and paste the following text into the console. This should take
-several minutes to complete. Don't worry if the odd package doesn't 
+a few minutes to complete. Don't worry if the odd package doesn't 
 install.
 
     install.packages("knitr")
