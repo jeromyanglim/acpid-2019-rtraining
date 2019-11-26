@@ -12,6 +12,9 @@ If you have not already done this, go to the following sites.
 * R: http://cran.rstudio.com/
 * Rstudio Desktop: http://www.rstudio.com/products/RStudio/
 
+
+* If you are on Windows, you will probably need to install rtools: https://cran.r-project.org/bin/windows/Rtools/
+
 # Install Additional R Packages
 Open R Studio and paste the following text into the console. This should take
 a few minutes to complete. Don't worry if the odd package doesn't 
