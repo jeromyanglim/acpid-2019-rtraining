@@ -1,0 +1,21 @@
+{
+    "collab_server" : "",
+    "contents" : "# Initialise Project\n```{r adjust_directory_if_needed}\n# Uncomment lines below if rmd file is placed in a subdirectory\n# library(knitr)\n# opts_knit$set(root.dir = normalizePath('../')) \n```\n\n```{r load_project}\n# 1. Set options in config/global.dcf\n# 2. Load packages listed in config/global.dcf\n# 3. Import functions and coe in lib directory\n# 4. Load data in data directory\n# 5. Run data manipulations in munge directory \nlibrary(ProjectTemplate); load.project()\n```             \n\n# Explore\n```{r}\n# sample size\nnrow(mlq)\n\n# check for missing data\nsapply(mlq, function(X) sum(is.na(X)))\n\n```\n\n# Exploratory factor analysis\n```{r}\n# check for 6 factors\npsych::scree(mlq[,v$mlq_items])\npsych::fa.parallel(mlq[,v$mlq_items])\n\n# examine 6 factor EFA\nfac1 <- factanal(mlq[,v$mlq_items], 6, rotation = \"promax\")\nprint(fac1, cutoff = .30)\n\nfl <- round(unclass(fac1$loadings), 2)\nfl\n\nwrite.csv(fl, \"output/efa-factor-loadings.csv\")\n```\n\n\n# Confirmatory factor analysis\n```{r}\nmodels <- list()\nfits <- list()\n\n# paste(v$mlq_items, collapse = \" + \")\n\n# one factor model\nmodels$m1 <- \n    'global  =~ mbea1 + mbea2 + mbea3 + mbep1 + mbep2 + mbep3 + \n            cr1 + cr2 + cr3 + ac1 + ac2 + ac3 + \n            is1 + is2 + is3 + ic1 + ic2 + ic3'\n\n# two factor model\nmodels$m2 <- \n    ' transformational =~ ac1 + ac2 + ac3  + is1 + is2 + is3 + ic1 + ic2 + ic3\n    transactional =~ mbep1 + mbep2 + mbep3 +mbea1 + mbea2 + mbea3 + cr1 + cr2 + cr3'\n\n# six factor model\nmodels$m3 <- \n    ' mbea =~ mbea1 + mbea2 + mbea3\n    mbep =~ mbep1 + mbep2 + mbep3 \n    cr =~ cr1 + cr2 + cr3 \n    ac =~ ac1 + ac2 + ac3 \n    is =~ is1 + is2 + is3\n    ic =~ ic1 + ic2 + ic3'\n\n\nfits$m1 <- lavaan::cfa(models$m1, data = mlq)\nfits$m2 <- lavaan::cfa(models$m2, data = mlq)\nfits$m3 <- lavaan::cfa(models$m3, data = mlq)\n\n\nsummary(fits$m3, fit.measures = TRUE) \nstandardizedSolution(fits$m3)\n\nv$fitindicies <- c(\"npar\",  \"chisq\", \"df\", \"pvalue\", \"cfi\", \"rmsea\", \n                 \"rmsea.ci.lower\", \"rmsea.ci.upper\", \"srmr\")\n\nround(sapply(fits, function(X) fitmeasures(X)[v$fitindicies]), 3)\n```\n\n# Reliability analysis\n```{r}\n# Create the scoring key \n# i.e., rows are the items of the scale\n# columns are the six scales\n# values are 1, -1, or 0 for positively worded, reversed, or not included item\nmeta.mlq\nc$mlq_scales\n\nscored <- scoreItems(keys =  meta.mlq[,v$mlq_scales],\n           items = mlq[,meta.mlq$id])\nround(scored$alpha, 2)\n```\n\n\n# Descriptive Statistics and Correlations\n\n```{r}\ndesc <- list()\ndesc$cor <- cor(mlq[,c(v$mlq_scales, \"goal\")])\ndesc$mean <- sapply(mlq[,c(v$mlq_scales, \"goal\")], mean)\ndesc$sd <- sapply(mlq[,c(v$mlq_scales, \"goal\")], sd)\n\ndesc$tab <- data.frame(mean = desc$mean, sd = desc$sd, desc$cor)\n\nrtab <- round(desc$tab, 2)\nwrite.csv(rtab, file = \"output/rtab.csv\")\n```\n\n\n# Regression models\n```{r}\n# Just transactional \nv$mlq_transactional\nv$mlq_transformational\nfits <- list()\n\nfits$transactional <- lm(goal ~ mbep + mbea + cr, mlq)\nfits$transformational <- lm(goal ~ ac + is + ic, mlq)\nfits$all <- lm(goal ~ ac + is + ic + mbep + mbea + cr, mlq)\n\nlapply(fits, summary)\nlapply(fits, function(X) summary(X)$adj)\n\n# does adding transactional or transformational add predictions\nanova(fits$transactional, fits$all)\nanova(fits$transformational, fits$all)\nsummary(fits$all)\n# standardised betas\nsummary(lm.beta::lm.beta(fits$all))\n```\n\n\n\n\n\n\n",
+    "created" : 1473298603267.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2204037192",
+    "id" : "42F8A5D1",
+    "lastKnownWriteTime" : 1473319017,
+    "last_content_update" : 1473319017459,
+    "path" : "~/teaching/org-research-methods-hps724/2016/content/07-regression/r-efa-regression-exercise/vandenberg-exercise/explore.rmd",
+    "project_path" : "explore.rmd",
+    "properties" : {
+        "marks" : "<:71,28\n>:71,28"
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}
