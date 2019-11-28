@@ -107,7 +107,6 @@ my.variable <- 1234
 ls()
 ls(all.names = TRUE)
 
-
 ########################################################
 # Comments:
 # Comments are any text on a line following a hash #
@@ -117,9 +116,9 @@ ls(all.names = TRUE)
 mean(c(1,2,3,4)) # Example of end of line comment
 
 # 3. Half way through a command at the end of a line
-c(1, # Example comment
-  2,3,   # Another comment
-  4)
+# c(1, # Example comment
+#   2,3,   # Another comment
+#   4)
   
 
 ########################################################
@@ -288,7 +287,7 @@ y
 # Basic data types
 # The most common basic vector types are
 x <- c(FALSE, TRUE) # logical vector
-y <- c("a", "b", "cat", "dog") # character vector
+y <- c('a', "b", "cat", "dog") # character vector
 z1 <- c(100, 1, 2, 3) # numeric integer vector
 z2 <- c(100.2, 0.4, 0.9) # numeric real/double vector
 class(x);  typeof(x); mode(x)
@@ -337,7 +336,8 @@ rep(c(1,2,3), 5) # repeat a value a certain number of times
 # as well as many simulation functions which we'll cover later
 # Initial examples:
 # Sample 10 items with replacement from 
-sample(x = c("happy", "funny", "silly"), size = 10, replace = TRUE)
+sample(x = c("happy", "funny", "silly"), 
+       size = 10, replace = TRUE)
 
 # Sample 20 values from a normal distribution
 y <- rnorm(n = 20, mean = 0, sd = 1) 
@@ -482,7 +482,7 @@ mydata[c(1,2)] # by position like a list
 mydata[ ,c("Sex", "Fold")] # by name like a matrix
 mydata[c("Sex", "Fold")] #
 mydata$Sex # by name to get a single variable
-
+View(mydata)
 
 #################################################
 # Names
@@ -518,6 +518,7 @@ help(mean) # or use help function
 
 # to look up package
 help(package = "MASS")
+help(package = "psych")
 
 # Press F1 in RStudio on the command name
 # mean 
@@ -608,7 +609,7 @@ nrow(fsurvey)
 ##############################################################
 # Installing an R package
 # Option 1. Use the install.packages function.
-# install.packages("psych")
+install.packages("psych")
 
 # Option 2. Use the package tab in R Studio
 # Click install and enter package details
@@ -666,6 +667,9 @@ search()
 # use double colon (i.e., package::function).
 # RStudio also permits auto-completion of function names.
 psych::alpha # alpha is a funtion in the psych package
+
+library(MASS)
+data(survey)
 
 ```
 
@@ -764,6 +768,10 @@ dat
 # A single value is recyled through the vector
 dat$z <- dat$x + 10
 dat
+
+dat$q <- rnorm(5)
+dat$iq <- round(100 + (dat$q * 15))
+dat
 ```
 
 # Exercise 2 - Data.frames
@@ -853,6 +861,7 @@ substr("abcdefghijklmnop", 4, 6)
 toupper("abcd") # make upper case
 tolower("ABCD") # make lower case
 
+
 mystring <- c("apple", "banana", "carrot", "date", "egg", "fig")
 # Identify which strings match a pattern
 grep("a", mystring) # index of objects with "a"
@@ -916,7 +925,10 @@ head(medals)
 # SPSS
 library(foreign)
 cas <- foreign::read.spss("data/practice/cas.sav", to.data.frame = TRUE)
-attr(cas, "variable.labels")
+                        
+head(cas)
+vnames <- attr(cas, "variable.labels")
+
 # tip: You may need to think about value labels in your SPSS file
 # Specifically, if you have numeric variables that have variable labels, you may
 # want to remove the value labels in SPSS or 
@@ -1093,7 +1105,7 @@ print_some_text("blah blah blah")  # or to print some other text
 # (i.e., simluation estimate of the statistical power)
 
 significant <- NULL
-for (i in 1:1000) {
+for (i in 1:10000) {
     x <- rnorm(30, mean = 0.0, sd = 1) 
     y <- rnorm(30, mean = 0.3, sd = 1) 
     fit <- t.test(x, y)

@@ -20,7 +20,7 @@ There are three main graphics packages in R:
 # Base graphics
 ```{r base graphics}
 # scatterplot
-plot(csurvey$Pulse, csurvey$Age)
+plot(csurvey$Age, csurvey$Pulse)
 plot(Age ~ Pulse, csurvey)
 plot(csurvey$Pulse)
 
@@ -186,6 +186,7 @@ data(ais)
 # 1. supply a data.frame
 # 2. add aesthetic mapping between variables in data.frame
 #    and 
+
 ggplot(ais, aes(x = ht, y = wt)) + geom_point()
 
 ggplot(ais, aes(x = ht, y= wt, colour = sex)) + 
@@ -200,6 +201,7 @@ ggsave("output/height_weight.pdf", width = 5, height = 5) # save last plot
 p <- ggplot(ais, aes(x = bmi)) 
 p + geom_histogram() #histogram
 p + geom_density(fill = "blue") # density plot
+
 
 # Show group differences
 p <- ggplot(ais, aes(x = sport, y = bmi)) 
