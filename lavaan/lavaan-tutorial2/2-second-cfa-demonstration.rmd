@@ -1,0 +1,175 @@
+# Initialise Project
+```{r load_project}
+library(ProjectTemplate); load.project()
+```             
+
+# Explore
+```{r}
+fac1 <- factanal(ccases[ , v$items], factors = 5, rotation = "promax")
+psych::scree(ccases[ , v$items])
+print(fac1, cutoff = .3)
+?loadings
+```
+
+
+# Basic CFA
+```{r}
+v$items
+
+models <- list()
+fits <- list()
+
+models$m1 <- 
+    'global  =~ a3 + a1 + a2 + a4 + a5 + c1 + c2 + c3 + c4 + c5 + e1 + e2 + e3 + e4 + e5 + n1 + n2 + n3 + n4 + n5 + o1 + o2 + o3 + o4 + o5'
+# paste(v$items, collapse = " + ")
+
+# five factor model
+models$m2 <- 
+    ' agree =~ a3 + a1 + a2 + a4 + a5 
+      consc =~ c1 + c2 + c3 + c4 + c5 
+      extra =~ e3 + e1 + e2 + e4 + e5 
+      neuro =~ n1 + n2 + n3 + n4 + n5 
+      open  =~ o1 + o2 + o3 + o4 + o5'
+models$m3 <- models$m2
+
+
+fits$m1 <- lavaan::cfa(models$m1, data = ccases)
+fits$m2 <- lavaan::cfa(models$m2, data = ccases, orthogonal = TRUE)
+fits$m3 <- lavaan::cfa(models$m3, data = ccases, orthogonal = FALSE)
+
+summary(fits$m1, fit.measures = TRUE) 
+standardizedSolution(fits$m1)
+
+summary(fits$m2, fit.measures = TRUE) 
+standardizedSolution(fits$m2)
+v$fitindicies
+
+summary(fits$m3, fit.measures = TRUE) 
+standardizedSolution(fits$m3)
+
+sapply(fits, function(X) core_fitmeasures(X))
+
+
+mod_ind <- modificationindices(fits$m3)
+head(mod_ind[order(mod_ind$mi, decreasing=TRUE), ], 10)
+meta.personality[ meta.personality$name %in% c("n1", "n2", "n3", "n4", "n5"), ]
+
+
+# correlated residuals
+models$m4 <- 
+    ' agree =~ a3 + a1 + a2 + a4 + a5 
+      consc =~ c1 + c2 + c3 + c4 + c5 
+      extra =~ e3 + e1 + e2 + e4 + e5 
+      neuro =~ n1 + n2 + n3 + n4 + n5 
+      open  =~ o1 + o2 + o3 + o4 + o5
+    
+    # correlated residuals
+    n1 ~~ n2 '
+fits$m4 <- lavaan::cfa(models$m4, data = ccases, orthogonal = FALSE)
+
+sapply(fits, function(X) core_fitmeasures(X))
+anova(fits$m3, fits$m4)
+
+
+# Cross loading (e5)
+models$m5 <- 
+    ' agree =~ a3 + a1 + a2 + a4 + a5 
+      consc =~ c1 + c2 + c3 + c4 + c5 + e5
+      extra =~ e3 + e1 + e2 + e4 + e5 
+      neuro =~ n1 + n2 + n3 + n4 + n5 
+      open  =~ o1 + o2 + o3 + o4 + o5
+    
+    # correlated residuals
+    n1 ~~ n2 '
+
+mod_ind <- modificationindices(fits$m4)
+head(mod_ind[order(mod_ind$mi, decreasing=TRUE), ], 10)
+
+fits$m5 <- lavaan::cfa(models$m5, data = ccases, orthogonal = FALSE)
+sapply(fits, function(X) core_fitmeasures(X))
+
+
+# global factor
+models$m6 <- 
+    ' agree =~ a3 + a1 + a2 + a4 + a5 
+      consc =~ c1 + c2 + c3 + c4 + c5 
+      extra =~ e3 + e1 + e2 + e4 + e5 
+      neuro =~ n1 + n2 + n3 + n4 + n5 
+      open  =~ o1 + o2 + o3 + o4 + o5
+    
+      global =~ 1 * agree + consc + extra + neuro + open'
+
+fits$m6 <- lavaan::cfa(models$m6, data = ccases, orthogonal = TRUE)
+
+sfit <- standardizedsolution(fits$m6)
+sfit
+sfit[sfit$lhs == "global", ]
+
+
+# bifactor
+models$m7 <- 
+    ' agree =~ a3 + a1 + a2 + a4 + a5 
+      consc =~ c1 + c2 + c3 + c4 + c5 
+      extra =~ e3 + e1 + e2 + e4 + e5 
+      neuro =~ n1 + n2 + n3 + n4 + n5 
+      open  =~ o1 + o2 + o3 + o4 + o5
+      
+     global =~ e3 + e1 + e2 + e4 + e5 + 
+a3 + a1 + a2 + a4 + a5 +
+c1 + c2 + c3 + c4 + c5 +
+n1 + n2 + n3 + n4 + n5 +
+o1 + o2 + o3 + o4 + o5      '
+
+fits$m7 <- lavaan::cfa(models$m7, data = ccases, orthogonal = TRUE)
+
+sfit <- standardizedsolution(fits$m7)
+sfit
+sfit[sfit$lhs == "global", ]
+
+
+
+# acquiescence factor
+models$m8 <- 
+    ' agree =~ a3 + a1 + a2 + a4 + a5 
+      consc =~ c1 + c2 + c3 + c4 + c5 
+      extra =~ e3 + e1 + e2 + e4 + e5 
+      neuro =~ n1 + n2 + n3 + n4 + n5 
+      open  =~ o1 + o2 + o3 + o4 + o5
+
+acquiescence  =~ acq * e3 + acq * e1 + acq * e2 + acq * e4 + acq * e5 + 
+acq * a3 + acq * a1 + acq * a2 + acq * a4 + acq * a5 +
+acq * c1 + acq * c2 + acq * c3 + acq * c4 + acq * c5 +
+acq * n1 + acq * n2 + acq * n3 + acq * n4 + acq * n5 +
+acq * o1 + acq * o2 + acq * o3 + acq * o4 + acq * o5      
+'
+
+fits$m8 <- lavaan::cfa(models$m8, data = ccases)
+
+sfit <- standardizedsolution(fits$m8)
+sfit
+sfit[sfit$lhs == "acquiescence", ]
+
+sumtable <- sapply(fits, function(X) core_fitmeasures(X))
+sumtable <- t(sumtable)
+sumtable
+write.csv(sumtable, file = "output/sumtable.csv")
+```
+
+
+
+# Convenience functions
+```{r}
+# convenience functions for generating models
+# see "lib/lavaan-convenience-functions.r")
+head(meta.personality)
+
+# quick way to create factor loadings
+model1 <- lavaan_indicators(meta.personality$scale, meta.personality$name)
+cat(model1)
+
+# quick way to 
+model2 <- paste0(model1, "\n", lavaan_covariances(unique(meta.personality$scale)))
+cat(model2)
+```
+
+
